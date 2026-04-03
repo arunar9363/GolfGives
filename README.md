@@ -1,10 +1,24 @@
 <div align="center">
 
-# ⛳ GolfGives
+<br/>
+
+<!-- GolfGives App Logo — matches the Heart icon used in Navbar/Sidebar -->
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <rect width="72" height="72" rx="18" fill="#22c55e"/>
+  <path d="M36 52s-18-11.5-18-24a10 10 0 0 1 18-6 10 10 0 0 1 18 6c0 12.5-18 24-18 24z" fill="white"/>
+</svg>
+
+<br/><br/>
+
+# GolfGives
 
 ### Play Golf. Win Prizes. Change Lives.
 
-A full-stack subscription platform where golfers log Stableford scores, participate in monthly prize draws, and support their chosen charity — all with every subscription.
+A full-stack subscription platform where golfers log Stableford scores,  
+participate in monthly prize draws, and support their chosen charity —  
+all with every subscription.
+
+<br/>
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
@@ -13,9 +27,11 @@ A full-stack subscription platform where golfers log Stableford scores, particip
 [![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?style=flat-square&logo=render)](https://render.com/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
 
-[Live Demo](https://golf-charity-frontend.onrender.com) · [Report Bug](https://github.com/your-username/golf-charity-platform/issues) · [Request Feature](https://github.com/your-username/golf-charity-platform/issues)
+<br/>
 
-![GolfGives Screenshot](https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&h=600&fit=crop&q=80)
+[🚀 Live Demo](https://golf-charity-frontend.onrender.com) · [🐛 Report Bug](https://github.com/your-username/golf-charity-platform/issues) · [💡 Request Feature](https://github.com/your-username/golf-charity-platform/issues)
+
+<br/>
 
 </div>
 
