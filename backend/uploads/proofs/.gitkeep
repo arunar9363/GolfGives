@@ -1,0 +1,8 @@
+This folder is used to store winner proof uploads.
+The /proofs/ subfolder will be created automatically by Multer when the first file is uploaded.
+
+Do NOT commit real uploads to version control.
+Add this folder to .gitignore if needed:
+
+uploads/proofs/*
+!uploads/proofs/.gitkeep
