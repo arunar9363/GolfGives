@@ -1,282 +1,521 @@
-# GolfGives — Golf Charity Subscription Platform
+<div align="center">
 
-> Play golf. Win prizes. Change lives.
+# ⛳ GolfGives
 
-A full-stack subscription platform where golfers log Stableford scores, participate in monthly prize draws, and support their chosen charity with every subscription.
+### Play Golf. Win Prizes. Change Lives.
+
+A full-stack subscription platform where golfers log Stableford scores, participate in monthly prize draws, and support their chosen charity — all with every subscription.
+
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248?style=flat-square&logo=mongodb)](https://mongodb.com/)
+[![Stripe](https://img.shields.io/badge/Stripe-Payments-635BFF?style=flat-square&logo=stripe)](https://stripe.com/)
+[![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?style=flat-square&logo=render)](https://render.com/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+
+[Live Demo](https://golf-charity-frontend.onrender.com) · [Report Bug](https://github.com/your-username/golf-charity-platform/issues) · [Request Feature](https://github.com/your-username/golf-charity-platform/issues)
+
+![GolfGives Screenshot](https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=1200&h=600&fit=crop&q=80)
+
+</div>
 
 ---
 
-## 🗂 Project Structure
+## 📋 Table of Contents
+
+- [About The Project](#-about-the-project)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Database Schema](#-database-schema)
+- [API Endpoints](#-api-endpoints)
+- [Key Algorithms](#-key-algorithms)
+- [Deployment](#-deployment)
+- [Screenshots](#-screenshots)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## 🎯 About The Project
+
+**GolfGives** is a subscription-based web application that combines golf performance tracking, monthly prize draws, and charitable giving into one seamless platform.
+
+Users subscribe monthly or yearly, log their last 5 Stableford golf scores, and automatically participate in a monthly draw. Match 3, 4, or all 5 drawn numbers and win a share of the prize pool — while a portion of every subscription goes directly to a charity of their choice.
+
+> Built as a trainee assignment for **Digital Heroes** (digitalheroes.co.in) — a premium full-stack development agency.
+
+---
+
+## ✨ Features
+
+### 👤 User Features
+- 🔐 **JWT Authentication** — Secure signup, login, and session management
+- 💳 **Stripe Subscriptions** — Monthly (₹999) and Yearly (₹9,999) plans
+- ⛳ **Score Tracking** — Log up to 5 Stableford scores (1–45), rolling logic
+- 🎯 **Monthly Draw** — Automatic participation, real-time results
+- 🏆 **Prize Claiming** — Proof upload, bank/UPI details, status tracking
+- ❤️ **Charity Selection** — Choose from 10+ verified charities, set contribution %
+- 🌙 **Light / Dark Mode** — Full theme toggle, saved to localStorage
+
+### 🛡️ Admin Features
+- 📊 **Dashboard** — Real-time stats, revenue estimates, user growth charts
+- 👥 **User Management** — View, edit, activate/deactivate accounts
+- 🎰 **Draw Engine** — Random or algorithmic draw, simulation mode, publish results
+- 🏥 **Charity Management** — Full CRUD, featured charity control
+- ✅ **Winner Verification** — Review proofs, approve/reject, mark as paid
+- 📈 **Reports** — Charity donation totals, subscriber analytics
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18, Vite, Tailwind CSS, Framer Motion |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB + Mongoose |
+| **Auth** | JWT (jsonwebtoken + bcryptjs) |
+| **Payments** | Stripe (Checkout Sessions + Webhooks) |
+| **Scheduling** | node-cron (auto monthly draw) |
+| **File Upload** | Multer (winner proof screenshots) |
+| **Charts** | Recharts |
+| **Deployment** | Render (backend) + Render Static (frontend) |
+
+---
+
+## 📁 Project Structure
 
 ```
 golf-charity-platform/
-├── backend/                  # Node.js + Express + MongoDB
+├── 📂 backend/
 │   └── src/
-│       ├── config/           # DB connection
-│       ├── controllers/      # Route handlers (auth, scores, draws, payments, etc.)
-│       ├── middleware/        # JWT auth, subscription guard, admin guard
-│       ├── models/           # Mongoose schemas (User, Score, Draw, Winner, Charity, Donation)
-│       ├── routes/           # Express routers
-│       ├── services/         # Draw engine algorithm
-│       ├── utils/            # Cron jobs, DB seed
+│       ├── config/
+│       │   └── db.js                 # MongoDB connection
+│       ├── controllers/
+│       │   ├── authController.js     # Register, login, me
+│       │   ├── scoreController.js    # Rolling 5-score logic
+│       │   ├── drawController.js     # Draw results & participation
+│       │   ├── paymentController.js  # Stripe checkout + webhooks
+│       │   ├── charityController.js  # Charity CRUD + selection
+│       │   ├── winnerController.js   # Proof upload + verification
+│       │   └── adminController.js    # Admin stats + user management
+│       ├── middleware/
+│       │   └── auth.js               # protect, adminOnly, requireSubscription
+│       ├── models/
+│       │   ├── User.js               # Auth + subscription + charity preference
+│       │   ├── Score.js              # Rolling 5-score array
+│       │   ├── Draw.js               # Monthly draw + winners + prize pool
+│       │   ├── Winner.js             # Verification workflow
+│       │   ├── Charity.js            # Charity profiles
+│       │   └── Donation.js           # Charity contribution tracking
+│       ├── routes/
+│       │   ├── auth.js
+│       │   ├── users.js
+│       │   ├── scores.js
+│       │   ├── payments.js
+│       │   ├── draws.js
+│       │   ├── charities.js
+│       │   ├── winners.js
+│       │   └── admin.js
+│       ├── services/
+│       │   └── drawEngine.js         # ⭐ Core draw algorithm
+│       ├── utils/
+│       │   ├── cronJobs.js           # Monthly auto-draw scheduler
+│       │   └── seed.js               # Initial data seeding
 │       └── server.js
-└── frontend/                 # React + Vite + Tailwind CSS
+│
+└── 📂 frontend/
     └── src/
-        ├── components/       # Navbar, Footer, DashboardLayout, AdminLayout
-        ├── context/          # AuthContext (global user state)
+        ├── components/
+        │   ├── layout/
+        │   │   ├── Navbar.jsx
+        │   │   ├── Footer.jsx
+        │   │   ├── DashboardLayout.jsx
+        │   │   └── AdminLayout.jsx
+        │   └── ui/
+        │       └── ThemeToggle.jsx    # Sun/Moon animated toggle
+        ├── context/
+        │   ├── AuthContext.jsx        # Global user state
+        │   └── ThemeContext.jsx       # Light/Dark mode state
         ├── pages/
-        │   ├── dashboard/    # Overview, Scores, Draw, Winnings, Charity, Profile, ProofUpload
-        │   ├── admin/        # Dashboard, Users, Draws, Charities, Winners
-        │   └── charity/      # CharitiesPage, CharityDetailPage
-        ├── services/         # Axios API client
-        └── styles/           # Global CSS + Tailwind
+        │   ├── HomePage.jsx
+        │   ├── PricingPage.jsx
+        │   ├── HowItWorksPage.jsx
+        │   ├── LoginPage.jsx
+        │   ├── RegisterPage.jsx
+        │   ├── charity/
+        │   │   ├── CharitiesPage.jsx
+        │   │   └── CharityDetailPage.jsx
+        │   ├── dashboard/
+        │   │   ├── DashboardOverview.jsx
+        │   │   ├── ScoresPage.jsx
+        │   │   ├── DrawPage.jsx
+        │   │   ├── WinningsPage.jsx
+        │   │   ├── CharitySelectionPage.jsx
+        │   │   ├── ProfilePage.jsx
+        │   │   └── ProofUploadPageComponent.jsx
+        │   └── admin/
+        │       ├── AdminDashboard.jsx
+        │       ├── AdminUsers.jsx
+        │       ├── AdminDraws.jsx
+        │       ├── AdminCharities.jsx
+        │       └── AdminWinners.jsx
+        ├── services/
+        │   └── api.js                 # Axios instance + interceptors
+        └── styles/
+            └── index.css              # CSS variables + Tailwind
 ```
 
 ---
 
-## ⚙️ Tech Stack
-
-| Layer       | Technology                         |
-|-------------|-------------------------------------|
-| Frontend    | React 18, Vite, Tailwind CSS, Framer Motion |
-| Backend     | Node.js, Express.js                 |
-| Database    | MongoDB + Mongoose                  |
-| Auth        | JWT (jsonwebtoken + bcryptjs)       |
-| Payments    | Stripe (Checkout + Webhooks)        |
-| Scheduling  | node-cron (monthly draw automation) |
-| File Upload | Multer (proof screenshots)          |
-| Charts      | Recharts                            |
-
----
-
-## 🚀 Setup Instructions
+## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js v18+
-- MongoDB (local or MongoDB Atlas)
-- Stripe account (test mode)
+- MongoDB (local or [Atlas](https://mongodb.com/atlas))
+- Stripe account (free test mode)
+- Git
 
----
+### 1. Clone the Repository
 
-### 1. Backend Setup
+```bash
+git clone https://github.com/your-username/golf-charity-platform.git
+cd golf-charity-platform
+```
+
+### 2. Backend Setup
 
 ```bash
 cd backend
 npm install
 cp .env.example .env
-# Fill in your .env values (see below)
+# Fill in your .env values (see Environment Variables section)
 npm run seed        # Seeds admin user + 6 charities
-npm run dev         # Starts on port 5000
+npm run dev         # Starts on http://localhost:5000
 ```
-
-**Backend `.env` values:**
-```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/golf-charity
-JWT_SECRET=change_this_to_a_long_random_string
-JWT_EXPIRE=7d
-
-STRIPE_SECRET_KEY=sk_test_YOUR_KEY
-STRIPE_WEBHOOK_SECRET=whsec_YOUR_SECRET
-STRIPE_MONTHLY_PRICE_ID=price_YOUR_MONTHLY_PRICE_ID
-STRIPE_YEARLY_PRICE_ID=price_YOUR_YEARLY_PRICE_ID
-
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your@gmail.com
-EMAIL_PASS=your_app_password
-
-FRONTEND_URL=http://localhost:3000
-
-ADMIN_EMAIL=admin@golfcharity.com
-ADMIN_PASSWORD=Admin@123456
-```
-
----
-
-### 2. Stripe Setup
-
-1. Go to [stripe.com](https://stripe.com) and create a test account
-2. Create two **Recurring prices** in your Stripe Dashboard:
-   - Monthly: £9.99/month → copy the `price_xxx` ID → `STRIPE_MONTHLY_PRICE_ID`
-   - Yearly: £99.99/year → copy the `price_xxx` ID → `STRIPE_YEARLY_PRICE_ID`
-3. Set up a webhook endpoint pointing to `http://localhost:5000/api/payments/webhook`
-4. Subscribe to events: `checkout.session.completed`, `invoice.payment_succeeded`, `invoice.payment_failed`, `customer.subscription.deleted`
-5. Copy the webhook signing secret → `STRIPE_WEBHOOK_SECRET`
-6. For local webhook testing: install [Stripe CLI](https://stripe.com/docs/stripe-cli) and run:
-   ```bash
-   stripe listen --forward-to localhost:5000/api/payments/webhook
-   ```
-
----
 
 ### 3. Frontend Setup
 
 ```bash
 cd frontend
 npm install
-# Create a .env file:
 echo "VITE_API_URL=http://localhost:5000/api" > .env
-npm run dev         # Starts on port 3000
+npm run dev         # Starts on http://localhost:3000
+```
+
+### 4. First Login
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@golfcharity.com` | `Admin@123456` |
+| User | Register at `/register` | — |
+
+> 💳 **Test Stripe Card:** `4242 4242 4242 4242` · Any future expiry · Any CVV
+
+---
+
+## 🔧 Environment Variables
+
+### Backend (`backend/.env`)
+
+```env
+# Server
+PORT=5000
+NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/golf-charity
+
+# JWT
+JWT_SECRET=your_super_secret_key_min_32_chars
+JWT_EXPIRE=7d
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxx
+STRIPE_MONTHLY_PRICE_ID=price_xxxxxxxxxxxxxxxx
+STRIPE_YEARLY_PRICE_ID=price_xxxxxxxxxxxxxxxx
+
+# Email (Gmail)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your@gmail.com
+EMAIL_PASS=your_gmail_app_password
+
+# Frontend (for CORS)
+FRONTEND_URL=http://localhost:3000
+
+# Admin seed credentials
+ADMIN_EMAIL=admin@golfcharity.com
+ADMIN_PASSWORD=Admin@123456
+```
+
+### Frontend (`frontend/.env`)
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### How to get Stripe keys
+
+1. Sign up at [stripe.com](https://stripe.com)
+2. **Secret Key** → Dashboard → Developers → API Keys → Secret key
+3. **Price IDs** → Dashboard → Product Catalog → Create 2 products:
+   - Monthly: ₹999/month recurring
+   - Yearly: ₹9,999/year recurring
+4. **Webhook Secret** → Install [Stripe CLI](https://stripe.com/docs/stripe-cli) and run:
+```bash
+stripe listen --forward-to localhost:5000/api/payments/webhook
 ```
 
 ---
 
-### 4. First Run
-
-1. Visit `http://localhost:3000`
-2. Register a new user account
-3. Subscribe via Pricing page (use Stripe test card: `4242 4242 4242 4242`)
-4. Log scores in the Dashboard
-5. Admin panel: `http://localhost:3000/admin` — log in with admin credentials from `.env`
-
----
-
-## 🗃 Database Schema
+## 🗃️ Database Schema
 
 ### Users
-| Field | Type | Notes |
-|-------|------|-------|
-| name, email, password | String | Auth fields |
-| role | `user` / `admin` | |
-| subscription | Object | status, plan, stripeCustomerId, stripeSubscriptionId, currentPeriodEnd |
-| selectedCharity | ObjectId → Charity | |
-| charityPercentage | Number | Min 10 |
+```javascript
+{
+  name, email, password,
+  role: 'user' | 'admin',
+  subscription: {
+    status: 'active' | 'inactive' | 'cancelled' | 'past_due',
+    plan: 'monthly' | 'yearly',
+    stripeCustomerId, stripeSubscriptionId,
+    currentPeriodEnd, cancelAtPeriodEnd
+  },
+  selectedCharity: ObjectId → Charity,
+  charityPercentage: Number (min: 10)
+}
+```
 
 ### Scores
-| Field | Type | Notes |
-|-------|------|-------|
-| user | ObjectId → User | Unique per user |
-| scores | Array (max 5) | { value 1–45, datePlayed, course, notes } |
+```javascript
+{
+  user: ObjectId → User,
+  scores: [{ value: 1-45, datePlayed, course, notes }],  // max 5
+  lastUpdated: Date
+}
+```
 
 ### Draw
-| Field | Type | Notes |
-|-------|------|-------|
-| month, year | Number | Unique compound index |
-| winningNumbers | [Number] | 5 numbers drawn |
-| prizePool | Object | total, fiveMatch, fourMatch, threeMatch |
-| winners | Object | fiveMatch[], fourMatch[], threeMatch[] |
-| jackpotCarriedForward | Boolean | |
+```javascript
+{
+  month, year,               // unique compound index
+  drawType: 'random' | 'algorithmic',
+  status: 'pending' | 'published',
+  winningNumbers: [Number],  // 5 numbers
+  prizePool: { total, fiveMatch, fourMatch, threeMatch, jackpotRollover },
+  winners: { fiveMatch: [], fourMatch: [], threeMatch: [] },
+  jackpotCarriedForward: Boolean
+}
+```
 
 ### Winner
-| Field | Type | Notes |
-|-------|------|-------|
-| user, draw | ObjectId refs | |
-| matchType | `three` / `four` / `five` | |
-| prizeAmount | Number | |
-| verificationStatus | `pending` → `proof_submitted` → `approved` → `paid` | |
-| proofFile | String | File path |
-| bankDetails | Object | |
-
-### Charity
-| Field | Type | Notes |
-|-------|------|-------|
-| name, slug | String | slug is unique |
-| description, shortDescription | String | |
-| category | Enum | health, education, environment... |
-| totalSubscribers, totalReceived | Number | Auto-managed |
-| isFeatured | Boolean | |
+```javascript
+{
+  user, draw,
+  matchType: 'three' | 'four' | 'five',
+  prizeAmount: Number,
+  verificationStatus: 'pending' → 'proof_submitted' → 'approved' → 'paid',
+  proofFile, bankDetails: { accountName, accountNumber, ifscCode, upiId }
+}
+```
 
 ---
 
-## 🎮 Key Algorithms
+## 📡 API Endpoints
+
+### Auth
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/auth/register` | Create account | Public |
+| POST | `/api/auth/login` | Login | Public |
+| GET | `/api/auth/me` | Get current user | 🔒 |
+| PUT | `/api/auth/change-password` | Change password | 🔒 |
+
+### Scores
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/scores/my` | Get my scores | 🔒 Subscriber |
+| POST | `/api/scores/add` | Add new score | 🔒 Subscriber |
+| PUT | `/api/scores/:id` | Edit score | 🔒 Subscriber |
+| DELETE | `/api/scores/:id` | Delete score | 🔒 Subscriber |
+
+### Draws
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/draws` | All published draws | Public |
+| GET | `/api/draws/latest` | Latest draw | Public |
+| GET | `/api/draws/user/participation` | My draw history | 🔒 Subscriber |
+| POST | `/api/draws/simulate` | Simulate draw | 🔒 Admin |
+| POST | `/api/draws/execute` | Run & publish draw | 🔒 Admin |
+
+### Payments
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/payments/create-checkout` | Stripe checkout | 🔒 |
+| POST | `/api/payments/cancel` | Cancel subscription | 🔒 |
+| GET | `/api/payments/portal` | Billing portal link | 🔒 |
+| POST | `/api/payments/webhook` | Stripe webhook | Stripe |
+
+### Charities
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/charities` | List all charities | Public |
+| GET | `/api/charities/:slug` | Charity detail | Public |
+| PUT | `/api/charities/select` | Select charity | 🔒 |
+| POST | `/api/charities` | Create charity | 🔒 Admin |
+| PUT | `/api/charities/:id` | Update charity | 🔒 Admin |
+| DELETE | `/api/charities/:id` | Deactivate charity | 🔒 Admin |
+
+### Winners
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/winners/my` | My winnings | 🔒 |
+| POST | `/api/winners/:id/upload-proof` | Upload proof | 🔒 |
+| PUT | `/api/winners/:id/bank-details` | Save bank/UPI | 🔒 |
+| GET | `/api/winners` | All winners | 🔒 Admin |
+| PUT | `/api/winners/:id/review` | Approve/Reject | 🔒 Admin |
+| PUT | `/api/winners/:id/mark-paid` | Mark paid | 🔒 Admin |
+
+---
+
+## ⚙️ Key Algorithms
 
 ### Score Rolling Logic
 ```
 User adds new score
-→ Prepend to scores array
-→ If scores.length > 5: remove last element
-→ Save — always max 5 entries, newest first
+→ Prepend to scores array (unshift)
+→ If scores.length > 5 → slice to first 5
+→ Always newest first, max 5 entries
 ```
 
-### Draw Engine (Random Mode)
+### Draw Engine — Random Mode
 ```
-Generate a Set of 5 unique numbers (1–45)
+Generate Set of 5 unique numbers (1–45)
 → For each active subscriber:
-   → Get their stored score values
-   → Count how many are in the winning set
-   → 5 matches = fiveMatch winner
-   → 4 matches = fourMatch winner
-   → 3 matches = threeMatch winner
+   → Get stored score values
+   → Intersect with winning numbers
+   → 5 matches = jackpot winner
+   → 4 matches = tier 2 winner
+   → 3 matches = tier 3 winner
 ```
 
-### Draw Engine (Algorithmic Mode)
+### Draw Engine — Algorithmic Mode
 ```
-Aggregate all active subscriber scores
-→ Count frequency of each value 1–45
-→ Sort by frequency ascending (least common first)
-→ Weight draw toward rarest 15 values
-→ Select 5 from this weighted pool
+Aggregate all subscriber scores
+→ Count frequency of each value (1–45)
+→ Sort ascending (least common first)
+→ Pick from rarest 15 values (weighted random)
+→ Lower hit probability = prize sustainability
 ```
 
 ### Prize Distribution
 ```
 Prize Pool = 50% of total monthly subscriptions
-fiveMatch pool  = prizePool × 0.40  (+ jackpot rollover if any)
-fourMatch pool  = prizePool × 0.35
-threeMatch pool = prizePool × 0.25
-
-Per-person prize = tier pool ÷ number of winners in tier
+─────────────────────────────────────────────
+5-Match pool  = Prize Pool × 0.40  + jackpot rollover
+4-Match pool  = Prize Pool × 0.35
+3-Match pool  = Prize Pool × 0.25
+─────────────────────────────────────────────
+Per-person prize = tier pool ÷ winners in tier
+If no 5-match winner → jackpot carries to next month
 ```
 
 ---
 
-## 🔐 Auth & Middleware
+## 🚢 Deployment
 
-| Middleware | Purpose |
-|-----------|---------|
-| `protect` | Verifies JWT, attaches `req.user` |
-| `adminOnly` | Allows only `role === 'admin'` |
-| `requireSubscription` | Allows only `subscription.status === 'active'` |
+### Deploy to Render (Recommended — Free Tier)
 
----
+**Backend:**
+1. Render → New → Web Service → GitHub repo
+2. Root Dir: `backend` | Build: `npm install` | Start: `node src/server.js`
+3. Add all environment variables
+4. Deploy → note your URL
 
-## 📋 Testing Checklist
+**Frontend:**
+1. Render → New → Static Site → Same repo
+2. Root Dir: `frontend` | Build: `npm install && npm run build` | Publish: `dist`
+3. Add `VITE_API_URL=https://your-backend.onrender.com/api`
+4. Deploy
 
-- [ ] User signup & login
-- [ ] Subscription flow (monthly and yearly via Stripe)
-- [ ] Score entry — 5-score rolling logic
-- [ ] Score edit and delete
-- [ ] Draw simulation (admin)
-- [ ] Draw execution and publish (admin)
-- [ ] Charity selection and percentage change
-- [ ] Winner proof upload
-- [ ] Admin winner approval / rejection
-- [ ] Admin mark as paid
-- [ ] User winnings page status tracking
-- [ ] Admin user management (edit, deactivate)
-- [ ] Admin charity CRUD
-- [ ] Responsive design on mobile
+**After Deploy:**
+```bash
+# Run seed via Render Shell tab
+node src/utils/seed.js
+```
 
----
+### Auto-Redeploy
+Push to `main` branch → Render automatically redeploys both services.
 
-## 🧩 Environment Variables Summary
+```bash
+git add .
+git commit -m "your changes"
+git push
+```
 
-| Variable | Description |
-|----------|-------------|
-| `MONGODB_URI` | MongoDB connection string |
-| `JWT_SECRET` | Secret for signing JWTs |
-| `STRIPE_SECRET_KEY` | Stripe secret key (sk_test_...) |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
-| `STRIPE_MONTHLY_PRICE_ID` | Stripe price ID for monthly plan |
-| `STRIPE_YEARLY_PRICE_ID` | Stripe price ID for yearly plan |
-| `FRONTEND_URL` | Your frontend origin (for CORS) |
-| `ADMIN_EMAIL` | Admin account email (used in seed) |
-| `ADMIN_PASSWORD` | Admin account password (used in seed) |
+> ⚠️ **Free tier:** Backend sleeps after 15min inactivity. First request may take ~30s.
 
 ---
 
-## 🚢 Deployment Notes
+## 🧪 Testing Checklist
 
-**Backend (Railway / Render / Heroku):**
-- Set all env vars in your hosting dashboard
-- Set `FRONTEND_URL` to your deployed frontend URL
-- MongoDB: use MongoDB Atlas free tier
-
-**Frontend (Vercel / Netlify):**
-- Set `VITE_API_URL` to your deployed backend URL
-- `npm run build` outputs to `dist/`
+- [x] User signup & login
+- [x] Subscription flow (monthly & yearly via Stripe)
+- [x] Score entry — 5-score rolling logic
+- [x] Score edit and delete
+- [x] Draw simulation (admin)
+- [x] Draw execution and publish (admin)
+- [x] Charity selection and % change
+- [x] Winner proof upload
+- [x] Admin winner approval / rejection
+- [x] Admin mark as paid
+- [x] User winnings page status tracking
+- [x] Admin user management
+- [x] Admin charity CRUD
+- [x] Light / Dark mode toggle
+- [x] Responsive design on mobile
 
 ---
 
-Built with ❤️ — Golf Charity Platform PRD by Digital Heroes
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit changes: `git commit -m 'Add AmazingFeature'`
+4. Push to branch: `git push origin feature/AmazingFeature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 🙏 Acknowledgements
+
+- [Digital Heroes](https://digitalheroes.co.in) — Project brief and PRD
+- [Stripe](https://stripe.com) — Payment infrastructure
+- [Unsplash](https://unsplash.com) — Charity imagery
+- [Lucide React](https://lucide.dev) — Icon library
+- [Framer Motion](https://www.framer.com/motion/) — Animations
+- [Recharts](https://recharts.org) — Admin analytics charts
+
+---
+
+<div align="center">
+
+Made with ❤️ for a better world
+
+**[⬆ Back to top](#-golfgives)**
+
+</div>
